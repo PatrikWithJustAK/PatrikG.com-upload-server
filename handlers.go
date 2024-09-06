@@ -78,22 +78,10 @@ func uploadPageHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error executing template", http.StatusInternalServerError)
 	}
 }
-
 func extensionChecker(p string) PageData {
-	if strings.HasSuffix(strings.ToUpper(p), ".PNG") {
-		var data = PageData{
-			Link: p,
-		}
-		return data
-	} else {
-		if strings.HasSuffix(strings.ToUpper(p), ".SVG") {
-			return PageData{
-				Link: p,
-			}
-		} else {
-			return PageData{
-				Link: p,
-			}
-		}
+	ext := strings.ToUpper(p)
+	if strings.HasSuffix(ext, ".PNG") || strings.HasSuffix(ext, ".SVG") {
+		return PageData{Link: p}
 	}
+	return PageData{Link: p}
 }
