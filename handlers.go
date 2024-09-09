@@ -3,6 +3,7 @@ package main
 //handlers.go contains all the http handlers for our server
 //these take in an HTTP request *http.Request, and return HTML templates that have context data applied
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"strings"
@@ -10,14 +11,15 @@ import (
 
 // PageData is a generic struct containing a string for development purposes
 type PageData struct {
-	Link string
+	Link    string
+	Imglist []string
 }
 
 // This handles files uploaded to the uploadform.html
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	// Only accept POST requests
 	if r.Method != http.MethodPost {
-		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		uploadPageHandler(w, r)
 		return
 	}
 
@@ -46,37 +48,38 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//prepare the template with the navbar, icon, uploadform, and main container componenets
-	tmpl, err := template.ParseFiles("assets/index.html", "assets/nav.html", "assets/icon.html", "assets/uploadform.html")
+	tmpl, err := template.ParseFiles("assets/index.html", "assets/nav.html", "assets/icon.html", "assets/uploadform.html", "assets/imagelist.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
-	data := extensionChecker(fileURL)
-
+	imgs := listS3Objects(bucketName)
+	data := PageData{
+		Link:    fileURL,
+		Imglist: imgs}
 	err = tmpl.Execute(w, data)
 	if err != nil {
-		http.Error(w, "Error executing template", http.StatusInternalServerError)
+		fmt.Printf("error: %s", err)
 	}
 
 }
 
 func uploadPageHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the template file
-	tmpl, err := template.ParseFiles("assets/index.html", "assets/nav.html", "assets/icon.html", "assets/uploadform.html")
+
+	tmpl, err := template.ParseFiles("assets/index.html", "assets/nav.html", "assets/icon.html", "assets/uploadform.html", "assets/imagelist.html")
 	if err != nil {
 		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 		return
 	}
 
 	// Create a new PageData to pass to the template
-	data := PageData{
-		Link: "patrik", // This can be dynamic based on which templates are rendered
+
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		http.Error(w, "Error parsing template", http.StatusInternalServerError)
 	}
 
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Error executing template", http.StatusInternalServerError)
-	}
 }
 func extensionChecker(p string) PageData {
 	ext := strings.ToUpper(p)

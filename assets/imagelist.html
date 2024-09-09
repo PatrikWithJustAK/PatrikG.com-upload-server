@@ -1,0 +1,13 @@
+{{define "imagelist" }}
+
+<div class=" max-w-7xl mx-auto sm:px-6 lg:px-8 justify-center border border-yellow-600">
+
+<div class="bg-white grid grid-cols-3 rounded-lg shadow-md w-full max-w-sm justify-center ">
+{{range .Imglist}}
+<div class= "flex-shrink border border-orange-500">
+    <img src="{{.}}">
+</div>
+{{end}}
+</div>
+</div>
+{{end}}

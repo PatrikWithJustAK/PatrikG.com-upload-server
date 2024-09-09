@@ -16,11 +16,13 @@
 </head>
 <body>
     {{ template "nav" .}}
-    {{if .Link }}
-   <img class="w-12" src={{.Link}}>
-    {{ end }}
     <div class="grid grid-cols-3 max-w-7xl mx-auto sm:px-6 lg:px-8 justify-center col-start-2 border border-green-500">
     {{template "uploadform" .}}
     </div>
+    {{ if .Imglist }}
+    <div class="grid grid-cols-1 max-w-7xl mx-auto sm:px-6 lg:px-8 justify-center col-start-2 border border-green-500">
+    {{template "imagelist" .}}
+    </div>
+    {{end}}
 </body>
 </html>
